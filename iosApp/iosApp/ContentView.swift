@@ -5,12 +5,32 @@ import ConfettiKit
 
 struct ContentView: View {
     @StateObject var viewModel = ConfettiViewModel()
+    
+    @State private var sessionId: SessionDetails.ID?
 
-    init() {
-        UITabBar.appearance().backgroundColor = UIColor.white
-    }
+//    init() {
+//        UITabBar.appearance().backgroundColor = UIColor.white
+//    }
     
     var body: some View {
+        
+        NavigationSplitView {
+            List(viewModel.sessions, selection: $sessionId) { session in
+                SessionView(viewModel: viewModel, session: session)
+            }
+        } detail: {
+            if let sessionId {
+                let session = viewModel.getSession(sessionId: sessionId)
+                SessionDetailsView(session: session)
+            }
+        }
+        //.navigationSplitViewStyle(.balanced)
+        .task {
+            await viewModel.observeSessions()
+        }
+
+/*
+        
         TabView {
             SessionListView(viewModel: viewModel)
                 .tabItem {
@@ -26,6 +46,7 @@ struct ContentView: View {
                 }
 
         }
+ */
     }
 }
 
@@ -140,42 +161,44 @@ struct SessionView: View {
             Text(viewModel.getSessionSpeakerLocation(session: session)).font(.system(size: 14))
             Spacer()
         }
+        .foregroundColor(.black)
     }
 }
 
 struct SessionDetailsView: View {
-    var session: SessionDetails
+    var session: SessionDetails?
 
     var body: some View {
-        
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                Text(session.title).font(.title).foregroundColor(.blue)
-                Divider()
-                
-                Text(session.sessionDescription() ?? "")
-                ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack(alignment: .center) {
-                        ForEach(session.tags, id: \.self) { tag in
-                            Text(tag)
-                                .padding(.vertical, 10)
-                                .padding(.horizontal)
-                                .background(.blue)
-                                .foregroundColor(.white)
-                                .background(Capsule().stroke())
-                                .clipShape(Capsule())
+        if let session {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text(session.title).font(.title).foregroundColor(.blue)
+                    Divider()
+                    
+                    Text(session.sessionDescription() ?? "")
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack(alignment: .center) {
+                            ForEach(session.tags, id: \.self) { tag in
+                                Text(tag)
+                                    .padding(.vertical, 10)
+                                    .padding(.horizontal)
+                                    .background(.blue)
+                                    .foregroundColor(.white)
+                                    .background(Capsule().stroke())
+                                    .clipShape(Capsule())
+                            }
                         }
+                        .padding(.vertical)
                     }
-                    .padding(.vertical)
+                    
+                    ForEach(session.speakers, id: \.self) { speaker in
+                        Text(speaker.name).bold()
+                        Text(speaker.bio ?? "")
+                    }
+                    Spacer()
                 }
-                
-                ForEach(session.speakers, id: \.self) { speaker in
-                    Text(speaker.name).bold()
-                    Text(speaker.bio ?? "")
-                }
-                Spacer()
+                .padding()
             }
-            .padding()
         }
     }
 }

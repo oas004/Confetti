@@ -114,6 +114,11 @@ class ConfettiViewModel: ObservableObject {
     }
 
     
+    func getSession(sessionId: String) -> SessionDetails? {
+        return sessions.filter( { return $0.id == sessionId } ).first
+    }
+
+    
     func getSessionTime(session: SessionDetails) -> String {
         return repository.getSessionTime(session: session)
     }

@@ -1,21 +1,21 @@
 package dev.johnoreilly.confetti.ui
 
+import android.content.Context
 import android.os.Build
+import android.os.Environment
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.squareup.kotlinpoet.*
 import dev.johnoreilly.confetti.ui.component.BackgroundTheme
 import dev.johnoreilly.confetti.ui.component.LocalBackgroundTheme
+import java.io.File
 
 
 /**
@@ -178,14 +178,17 @@ fun ConfettiTheme(
     content: @Composable() () -> Unit
 ) {
 
+    val context = LocalContext.current
     val colorScheme = if (androidTheme) {
         if (darkTheme) DarkAndroidColorScheme else LightAndroidColorScheme
     } else if (!disableDynamicTheming && supportsDynamicTheming()) {
-        val context = LocalContext.current
         if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
     } else {
         if (darkTheme) DarkDefaultColorScheme else LightDefaultColorScheme
     }
+
+    generateDynamicColorSchemeFile(darkTheme, context)
+
 
     val defaultGradientColors = GradientColors()
     val gradientColors = if (androidTheme || (!disableDynamicTheming && supportsDynamicTheming())) {
@@ -213,6 +216,54 @@ fun ConfettiTheme(
             typography = ConfettiTypography,
             content = content
         )
+    }
+}
+
+private fun FileSpec.Builder.addCclorProperty(propertyName: String, color: Color): FileSpec.Builder {
+    val colorInitializer = "Color(${color.red}f, ${color.green}f, ${color.blue}f, ${color.alpha}f)"
+    val propertySpec = PropertySpec.builder(propertyName, Color::class, KModifier.INTERNAL)
+        .initializer(colorInitializer)
+        .build()
+    return addProperty(propertySpec)
+}
+
+
+
+fun generateDynamicColorSchemeFile(darkTheme: Boolean, context: Context) {
+    val colorScheme = if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+
+    val file = FileSpec.builder("", "Colors")
+        .addCclorProperty("md_theme_light_primary", colorScheme.primary)
+        .addCclorProperty("md_theme_light_onPrimary", colorScheme.onPrimary)
+        .addCclorProperty("md_theme_light_primaryContainer", colorScheme.primaryContainer)
+        .addCclorProperty("md_theme_light_onPrimaryContainer", colorScheme.onPrimaryContainer)
+        .addCclorProperty("md_theme_light_secondary", colorScheme.secondary)
+        .addCclorProperty("md_theme_light_onSecondary", colorScheme.onSecondary)
+        .addCclorProperty("md_theme_light_secondaryContainer", colorScheme.secondaryContainer)
+        .addCclorProperty("md_theme_light_onSecondaryContainer", colorScheme.onSecondaryContainer)
+        .addCclorProperty("md_theme_light_tertiary", colorScheme.tertiary)
+        .addCclorProperty("md_theme_light_onTertiary", colorScheme.onTertiary)
+        .addCclorProperty("md_theme_light_tertiaryContainer", colorScheme.tertiaryContainer)
+        .addCclorProperty("md_theme_light_onTertiaryContainer", colorScheme.onTertiaryContainer)
+        .addCclorProperty("md_theme_light_error", colorScheme.error)
+        .addCclorProperty("md_theme_light_errorContainer", colorScheme.errorContainer)
+        .addCclorProperty("md_theme_light_onError", colorScheme.onError)
+        .addCclorProperty("md_theme_light_onErrorContainer", colorScheme.onErrorContainer)
+        .addCclorProperty("md_theme_light_background", colorScheme.background)
+        .addCclorProperty("md_theme_light_onBackground", colorScheme.onBackground)
+        .addCclorProperty("md_theme_light_surface", colorScheme.surface)
+        .addCclorProperty("md_theme_light_onSurface", colorScheme.onSurface)
+        .addCclorProperty("md_theme_light_surfaceVariant", colorScheme.surfaceVariant)
+        .addCclorProperty("md_theme_light_onSurfaceVariant", colorScheme.onSurfaceVariant)
+        .addCclorProperty("md_theme_light_outline", colorScheme.outline)
+        .addCclorProperty("md_theme_light_inverseOnSurface", colorScheme.inverseOnSurface)
+        .addCclorProperty("md_theme_light_inverseSurface", colorScheme.inverseSurface)
+        .addCclorProperty("md_theme_light_inversePrimary", colorScheme.inversePrimary)
+        .addCclorProperty("md_theme_light_surfaceTint", colorScheme.surfaceTint)
+        .build()
+
+    context.getExternalFilesDir("")?.let {
+        file.writeTo(it)
     }
 }
 

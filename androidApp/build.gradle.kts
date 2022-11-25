@@ -79,6 +79,7 @@ dependencies {
         implementation(accompanistFlowLayout)
         implementation(accompanistPager)
         implementation(accompanistPagerIndicator)
+        implementation(accompanistPermissions)
     }
 
     with (Koin) {
@@ -86,4 +87,6 @@ dependencies {
         implementation(android)
         implementation(compose)
     }
+
+    implementation(Deps.kotlinPoet)
 }

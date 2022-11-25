@@ -41,6 +41,8 @@ object Deps {
     const val kaml = "com.charleskorn.kaml:kaml:0.47.0"
     const val ktorCio = "io.ktor:ktor-server-cio:2.1.0"
     const val ktorStatusPages = "io.ktor:ktor-server-status-pages:2.1.0"
+
+    const val kotlinPoet = "com.squareup:kotlinpoet:1.12.0"
 }
 
 
@@ -85,6 +87,7 @@ object Compose {
     const val accompanistFlowLayout = "com.google.accompanist:accompanist-flowlayout:${Versions.accompanist}"
     const val accompanistPager = "com.google.accompanist:accompanist-pager:${Versions.accompanist}"
     const val accompanistPagerIndicator = "com.google.accompanist:accompanist-pager-indicators:${Versions.accompanist}"
+    const val accompanistPermissions = "com.google.accompanist:accompanist-permissions:${Versions.accompanist}"
 }
 
 object Koin {

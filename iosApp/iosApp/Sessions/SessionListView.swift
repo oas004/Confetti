@@ -27,7 +27,7 @@ struct SessionListView: View {
                         Section(header: Text(key).foregroundColor(Color("Title"))) {
                             let sessions = sessionUiState.sessionsByStartTimeList[selectedDateIndex][key] ?? []
                             ForEach(sessions, id: \.self) { session in
-                                VStack {
+                                VStack {    
                                     if (!session.isBreak()) {
                                         NavigationLink(destination: SessionDetailsView(session: session)) {
                                             SessionView(session: session)

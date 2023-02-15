@@ -20,13 +20,11 @@ struct SessionSpeakerInfo: View {
                 Spacer()
 
                 VStack(alignment: .leading) {
-                    Text("\(speaker.name ), \(speaker.company ?? "")")
+                    Text("\(speaker.name )")
                         .bold()
-                        .font(.title3)
-                    Text(speaker.city ?? "")
-                        .bold()
+                        .font(.system(size: 20))
                     Spacer(minLength: 10)
-                    Text(speaker.bio ?? "")
+                    Text(speaker.bio ?? "").font(.system(size: 14))
                     Spacer(minLength: 10)
                     HStack(alignment: .top, spacing: 20) {
                         SessionSpeakerSocialInfo(speaker: speaker)

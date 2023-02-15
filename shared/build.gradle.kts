@@ -1,7 +1,10 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
     id("com.apollographql.apollo3")
+    id("org.jetbrains.compose") version "0.0.0-master-dev936"
     id("com.google.devtools.ksp")
     id("com.rickclephas.kmp.nativecoroutines")
     id("co.touchlab.faktory.kmmbridge")
@@ -18,8 +21,11 @@ kotlin {
         iosArm64(),
         iosSimulatorArm64()
     ).forEach {
-        it.binaries.framework {
-            baseName = "ConfettiKit"
+        it.binaries {
+            framework {
+                baseName = "ConfettiKit"
+                isStatic = true
+            }
         }
     }
 
@@ -45,6 +51,14 @@ kotlin {
 
                 api(libs.apollo.runtime)
                 implementation(libs.bundles.apollo)
+
+                implementation(compose.ui)
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material)
+                //implementation(libs.accompanist.flow.layout)
+                implementation("org.jetbrains.compose.components:components-resources:1.3.0-beta04-dev879")
+                api("io.github.qdsfdhvh:image-loader:1.2.8")
             }
         }
         val commonTest by getting {
@@ -83,6 +97,8 @@ kotlin {
             }
         }
     }
+
+
 }
 
 android {
@@ -144,19 +160,12 @@ kmmbridge {
     versionPrefix.set("0.7")
 }
 
-allprojects {
-    afterEvaluate {
-        // temp fix until sqllight includes https://github.com/cashapp/sqldelight/pull/3671
-        project.extensions.findByType<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension>()
-            ?.let { kmpExt ->
-                kmpExt.targets
-                    .filterIsInstance<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>()
-                    .flatMap { it.binaries }
-                    .forEach { it.linkerOpts("-lsqlite3") }
-            }
-    }
-}
 
 kotlin.sourceSets.all {
     languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
+}
+
+compose {
+    kotlinCompilerPlugin.set("1.4.3-dev-k1.8.20-Beta-15b4f4328eb")
+    kotlinCompilerPluginArgs.add("suppressKotlinVersionCompatibilityCheck=1.8.20-Beta")
 }

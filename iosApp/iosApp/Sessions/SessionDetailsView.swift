@@ -2,17 +2,30 @@ import SwiftUI
 import SwiftUIFlowLayout
 import ConfettiKit
 
+
+struct SessionDetailsView2: UIViewControllerRepresentable {
+    var session: SessionDetails
+    
+    func makeUIViewController(context: Context) -> UIViewController {
+        return SharedViewControllersKt.SessionDetailsViewController(session: session)
+    }
+    
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+    }
+}
+
+
 struct SessionDetailsView: View {
     var session: SessionDetails
 
     var body: some View {
         
         ScrollView {
-            VStack(alignment: .leading, spacing: 8) {
-                Text(session.title).font(.title).foregroundColor(.blue)
-                Spacer()
+            VStack(alignment: .leading, spacing: 6) {
+                Text(session.title).font(.system(size: 24)).foregroundColor(.blue)
+                //Spacer().frame(height: 8)
                 
-                Text(session.sessionDescription ?? "").font(.body)
+                Text(session.sessionDescription ?? "").font(.system(size: 16))
                                 
                 if session.tags.count > 0 {
                     FlowLayout(mode: .scrollable,
@@ -25,6 +38,7 @@ struct SessionDetailsView: View {
                             .foregroundColor(.white)
                             .background(Capsule().stroke())
                             .clipShape(Capsule())
+                            .font(.system(size: 16))
                     }
                 }
                 
@@ -37,6 +51,5 @@ struct SessionDetailsView: View {
             .padding()
         }
         .navigationBarTitleDisplayMode(.inline)
-        .background(Color(0xF0F0F0))
     }
 }

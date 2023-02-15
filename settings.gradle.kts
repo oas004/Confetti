@@ -5,10 +5,7 @@ pluginManagement {
             mavenCentral()
             google()
             maven("https://androidx.dev/storage/compose-compiler/repository")
-            gradlePluginPortal {
-                content {
-                }
-            }
+            maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         }
     }
 

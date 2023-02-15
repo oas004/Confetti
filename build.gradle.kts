@@ -17,3 +17,14 @@ plugins {
 tasks.register("clean", Delete::class) {
     delete(rootProject.buildDir)
 }
+
+
+allprojects {
+    configurations.all {
+        resolutionStrategy.dependencySubstitution {
+            substitute(module("org.jetbrains.compose.compiler:compiler")).apply {
+                using(module("androidx.compose.compiler:compiler:1.4.3-dev-k1.8.20-Beta-15b4f4328eb"))
+            }
+        }
+    }
+}

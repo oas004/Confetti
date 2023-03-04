@@ -3,11 +3,11 @@ package dev.johnoreilly.confetti
 import dev.johnoreilly.confetti.fragment.SessionDetails
 import com.rickclephas.kmm.viewmodel.*
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import dev.johnoreilly.confetti.utils.DateTimeFormatter
 import kotlinx.coroutines.flow.*
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone.Companion.currentSystemDefault
-import kotlinx.datetime.toInstant
+
+
 
 
 sealed interface SessionsUiState {
@@ -24,6 +24,7 @@ sealed interface SessionsUiState {
 class ConfettiViewModel: KMMViewModel() {
     private val repository = ConfettiRepository()
 
+
     @NativeCoroutinesState
     val uiState: StateFlow<SessionsUiState> = repository.sessionsByDateMap.map { sessionsByDateMap ->
 
@@ -33,12 +34,13 @@ class ConfettiViewModel: KMMViewModel() {
 
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), SessionsUiState.Loading)
 
+
     private fun groupSessionsByStartTime(confDates: List<LocalDate>, sessionsByDateMap: Map<LocalDate, List<SessionDetails>>): MutableList<Map<String, List<SessionDetails>>> {
         val sessionsByStartTimeList = mutableListOf<Map<String, List<SessionDetails>>>()
         confDates.forEach { confDate ->
             val sessions = sessionsByDateMap[confDate] ?: emptyList()
             val sessionsByStartTime = sessions.groupBy {
-                dateTimeFormatter.format(it.start.toInstant(currentSystemDefault()), currentSystemDefault(), "HH:mm")
+                dateTimeFormatter.format(it.start, currentSystemDefault(), "HH:mm")
             }
             sessionsByStartTimeList.add(sessionsByStartTime)
         }
@@ -46,3 +48,24 @@ class ConfettiViewModel: KMMViewModel() {
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
